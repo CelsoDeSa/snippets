@@ -10,6 +10,8 @@ Key principles summary:
 
 ## Table of Contents
 
+- [Installing Redux](#Installing-Redux)
+- [Basic File Structure](#Basic-File-Structure)
 - [Create a Redux Store](#Create-a-Redux-Store)
 - [Get State from the Redux Store](#Get-State-from-the-Redux-Store)
 - [Define a Redux Action](#Define-a-Redux-Action)
@@ -27,6 +29,60 @@ Key principles summary:
 
 ---
 
+## Installing Redux
+
+```javascript
+npm install ---save redux
+```
+
+---
+
+## Basic File Structure
+
+```javascript
+// Node import sintax
+const redux = require("redux");
+const createStore = redux.createStore;
+
+// default state
+const initialState = {
+	counter: 0
+};
+
+// Reducer
+const rootReducer = (state = initialState, action) => {
+	if (action.type === "INC_COUNTER") {
+		return {
+			...state, // copying state (because we can't change the original state)
+			counter: state.counter + 1
+		};
+	}
+	if (action.type === "ADD_COUNTER") {
+		return {
+			...state,
+			counter: state.counter + action.value
+		};
+	}
+	return state;
+};
+
+// Store
+const store = createStore(rootReducer);
+console.log(store.getState());
+
+// Subscription (it's a store listener: it informs when changes happen)
+store.subscribe(() => {
+	console.log("[Subscription]", store.getState()); // This is executed whenever an action is dispatched and mutates the store
+});
+
+// Dispatching Action
+store.dispatch({ type: "INC_COUNTER" });
+store.dispatch({ type: "ADD_COUNTER", value: 10 });
+console.log(store.getState());
+```
+
+---
+
 ## Create a Redux Store
 
 The Redux store is the single source of truth when it comes to application state.
@@ -39,7 +95,7 @@ This method takes a reducer function as a required argument. The reducer takes s
 
 ```javascript
 const reducer = (state = 5) => {
-  return state;
+	return state;
 };
 
 // Redux methods are available from a Redux object
@@ -76,7 +132,7 @@ Actions must carry a type property that specifies the 'type' of action that occu
 
 ```javascript
 const action = {
-  type: "LOGIN"
+	type: "LOGIN"
 };
 ```
 
@@ -92,12 +148,12 @@ They are JavaScript functions that returns objects that represent action events.
 
 ```javascript
 const action = {
-  type: "LOGIN"
+	type: "LOGIN"
 };
 
 // Define an action creator here:
 const actionCreator = (action) => {
-  return action;
+	return action;
 };
 ```
 
@@ -111,9 +167,9 @@ Calling store.dispatch() and passing the value returned from an action creator s
 const store = Redux.createStore((state = { login: false }) => state);
 
 const loginAction = () => {
-  return {
-    type: "LOGIN"
-  };
+	return {
+		type: "LOGIN"
+	};
 };
 
 // Dispatch the action here:
@@ -132,25 +188,25 @@ Another key principle in Redux is that state is read-only. In other words, the r
 
 ```javascript
 const defaultState = {
-  login: false
+	login: false
 };
 
 const reducer = (state = defaultState, action) => {
-  // Note: the current state and the dispatched action are passed (from elsewhere) to the reducer, so you can access the action's type directly with action.type
-  if (action.type == "LOGIN") {
-    return { login: true };
-  } else {
-    return state;
-  }
-  // changed code above this line
+	// Note: the current state and the dispatched action are passed (from elsewhere) to the reducer, so you can access the action's type directly with action.type
+	if (action.type == "LOGIN") {
+		return { login: true };
+	} else {
+		return state;
+	}
+	// changed code above this line
 };
 
 const store = Redux.createStore(reducer);
 
 const loginAction = () => {
-  return {
-    type: "LOGIN"
-  };
+	return {
+		type: "LOGIN"
+	};
 };
 ```
 
@@ -166,36 +222,36 @@ You also need action creators that create actions corresponding to user login an
 
 ```javascript
 const defaultState = {
-  authenticated: false
+	authenticated: false
 };
 
 const authReducer = (state = defaultState, action) => {
-  // This is a standard pattern in writing Redux reducers. The switch statement should switch over action.type and return the appropriate authentication state.
-  switch (action.type) {
-    case "LOGIN":
-      return { authenticated: true };
-      break;
-    case "LOGOUT":
-      return { authenticated: false };
-      break;
-    default:
-      return state;
-  }
-  // change code above this line
+	// This is a standard pattern in writing Redux reducers. The switch statement should switch over action.type and return the appropriate authentication state.
+	switch (action.type) {
+		case "LOGIN":
+			return { authenticated: true };
+			break;
+		case "LOGOUT":
+			return { authenticated: false };
+			break;
+		default:
+			return state;
+	}
+	// change code above this line
 };
 
 const store = Redux.createStore(authReducer);
 
 const loginUser = () => {
-  return {
-    type: "LOGIN"
-  };
+	return {
+		type: "LOGIN"
+	};
 };
 
 const logoutUser = () => {
-  return {
-    type: "LOGOUT"
-  };
+	return {
+		type: "LOGOUT"
+	};
 };
 ```
 
@@ -212,38 +268,38 @@ const LOGOUT = "LOGOUT";
 // changed code above this line, in authReducer and in action creators (using these constants)
 
 const defaultState = {
-  authenticated: false
+	authenticated: false
 };
 
 const authReducer = (state = defaultState, action) => {
-  switch (action.type) {
-    case LOGIN:
-      return {
-        authenticated: true
-      };
+	switch (action.type) {
+		case LOGIN:
+			return {
+				authenticated: true
+			};
 
-    case LOGOUT:
-      return {
-        authenticated: false
-      };
+		case LOGOUT:
+			return {
+				authenticated: false
+			};
 
-    default:
-      return state;
-  }
+		default:
+			return state;
+	}
 };
 
 const store = Redux.createStore(authReducer);
 
 const loginUser = () => {
-  return {
-    type: LOGIN
-  };
+	return {
+		type: LOGIN
+	};
 };
 
 const logoutUser = () => {
-  return {
-    type: LOGOUT
-  };
+	return {
+		type: LOGOUT
+	};
 };
 ```
 
@@ -257,12 +313,12 @@ store.subscribe() allows you to subscribe listener functions to the store, which
 const ADD = "ADD";
 
 const reducer = (state = 0, action) => {
-  switch (action.type) {
-    case ADD:
-      return state + 1;
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case ADD:
+			return state + 1;
+		default:
+			return state;
+	}
 };
 
 const store = Redux.createStore(reducer);
@@ -272,7 +328,7 @@ let count = 0;
 
 // changed code below this line
 const addCount = () => {
-  return (count += 1);
+	return (count += 1);
 };
 
 store.subscribe(addCount);
@@ -302,8 +358,8 @@ It is a good practice to create a reducer for each piece of application state wh
 
 ```javascript
 const rootReducer = Redux.combineReducers({
-  auth: authenticationReducer,
-  notes: notesReducer
+	auth: authenticationReducer,
+	notes: notesReducer
 });
 ```
 
@@ -320,38 +376,38 @@ const INCREMENT = "INCREMENT";
 const DECREMENT = "DECREMENT";
 
 const counterReducer = (state = 0, action) => {
-  switch (action.type) {
-    case INCREMENT:
-      return state + 1;
-    case DECREMENT:
-      return state - 1;
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case INCREMENT:
+			return state + 1;
+		case DECREMENT:
+			return state - 1;
+		default:
+			return state;
+	}
 };
 
 const LOGIN = "LOGIN";
 const LOGOUT = "LOGOUT";
 
 const authReducer = (state = { authenticated: false }, action) => {
-  switch (action.type) {
-    case LOGIN:
-      return {
-        authenticated: true
-      };
-    case LOGOUT:
-      return {
-        authenticated: false
-      };
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case LOGIN:
+			return {
+				authenticated: true
+			};
+		case LOGOUT:
+			return {
+				authenticated: false
+			};
+		default:
+			return state;
+	}
 };
 
 // defined the root reducer here
 const rootReducer = Redux.combineReducers({
-  count: counterReducer,
-  auth: authReducer
+	count: counterReducer,
+	auth: authReducer
 });
 // defined above
 
@@ -376,25 +432,25 @@ The action is dispatched at the bottom of the code.
 const ADD_NOTE = "ADD_NOTE";
 
 const notesReducer = (state = "Initial State", action) => {
-  switch (action.type) {
-    // 2. The data (note) is recieved and returned bellow
-    case ADD_NOTE:
-      return action.text;
-      break;
-    // change code above this line
-    default:
-      return state;
-  }
+	switch (action.type) {
+		// 2. The data (note) is recieved and returned bellow
+		case ADD_NOTE:
+			return action.text;
+			break;
+		// change code above this line
+		default:
+			return state;
+	}
 };
 
 const addNoteText = (note) => {
-  // 1. The data (note) is sent in the key `text:` bellow
-  const action = {
-    type: ADD_NOTE,
-    text: note
-  };
-  return action;
-  // change code above this line
+	// 1. The data (note) is sent in the key `text:` bellow
+	const action = {
+		type: ADD_NOTE,
+		text: note
+	};
+	return action;
+	// change code above this line
 };
 
 const store = Redux.createStore(notesReducer);
@@ -418,8 +474,8 @@ To include Redux Thunk middleware (excerpts extracted from the challenge):
 
     ```javascript
     const store = Redux.createStore(
-      asyncDataReducer,
-      Redux.applyMiddleware(ReduxThunk.default)
+    	asyncDataReducer,
+    	Redux.applyMiddleware(ReduxThunk.default)
     );
     ```
 
@@ -427,19 +483,19 @@ To include Redux Thunk middleware (excerpts extracted from the challenge):
 
     ```javascript
     const handleAsync = () => {
-      // you're passing dispatch as a parameter to this special action creator. This is what you'll use to dispatch your actions, you simply pass the action directly to dispatch and the middleware takes care of the rest.
-      return function(dispatch) {
-        // dispatch request action here
-        store.dispatch(requestingData());
+    	// you're passing dispatch as a parameter to this special action creator. This is what you'll use to dispatch your actions, you simply pass the action directly to dispatch and the middleware takes care of the rest.
+    	return function(dispatch) {
+    		// dispatch request action here
+    		store.dispatch(requestingData());
 
-        setTimeout(function() {
-          let data = {
-            users: ["Jeff", "William", "Alice"]
-          };
-          // dispatch received data action here
-          store.dispatch(receivedData(data));
-        }, 2500);
-      };
+    		setTimeout(function() {
+    			let data = {
+    				users: ["Jeff", "William", "Alice"]
+    			};
+    			// dispatch received data action here
+    			store.dispatch(receivedData(data));
+    		}, 2500);
+    	};
     };
     ```
 
@@ -452,52 +508,52 @@ const REQUESTING_DATA = "REQUESTING_DATA";
 const RECEIVED_DATA = "RECEIVED_DATA";
 
 const requestingData = () => {
-  return { type: REQUESTING_DATA };
+	return { type: REQUESTING_DATA };
 };
 const receivedData = (data) => {
-  return { type: RECEIVED_DATA, users: data.users };
+	return { type: RECEIVED_DATA, users: data.users };
 };
 
 const handleAsync = () => {
-  return function(dispatch) {
-    // dispatch request action here
-    store.dispatch(requestingData());
+	return function(dispatch) {
+		// dispatch request action here
+		store.dispatch(requestingData());
 
-    setTimeout(function() {
-      let data = {
-        users: ["Jeff", "William", "Alice"]
-      };
-      // dispatch received data action here
-      store.dispatch(receivedData(data));
-    }, 2500);
-  };
+		setTimeout(function() {
+			let data = {
+				users: ["Jeff", "William", "Alice"]
+			};
+			// dispatch received data action here
+			store.dispatch(receivedData(data));
+		}, 2500);
+	};
 };
 
 const defaultState = {
-  fetching: false,
-  users: []
+	fetching: false,
+	users: []
 };
 
 const asyncDataReducer = (state = defaultState, action) => {
-  switch (action.type) {
-    case REQUESTING_DATA:
-      return {
-        fetching: true,
-        users: []
-      };
-    case RECEIVED_DATA:
-      return {
-        fetching: false,
-        users: action.users
-      };
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case REQUESTING_DATA:
+			return {
+				fetching: true,
+				users: []
+			};
+		case RECEIVED_DATA:
+			return {
+				fetching: false,
+				users: action.users
+			};
+		default:
+			return state;
+	}
 };
 
 const store = Redux.createStore(
-  asyncDataReducer,
-  Redux.applyMiddleware(ReduxThunk.default)
+	asyncDataReducer,
+	Redux.applyMiddleware(ReduxThunk.default)
 );
 ```
 
@@ -510,30 +566,30 @@ const INCREMENT = "INCREMENT"; // define a constant for increment action types
 const DECREMENT = "DECREMENT"; // define a constant for decrement action types
 
 const counterReducer = (state = 0, action) => {
-  switch (action.type) {
-    case INCREMENT:
-      return state + 1;
-      break;
-    case DECREMENT:
-      return state - 1;
-      break;
-    default:
-      return state;
-  }
+	switch (action.type) {
+		case INCREMENT:
+			return state + 1;
+			break;
+		case DECREMENT:
+			return state - 1;
+			break;
+		default:
+			return state;
+	}
 }; // define the counter reducer which will increment or decrement the state based on the action it receives
 
 const incAction = () => {
-  const action = {
-    type: INCREMENT
-  };
-  return action;
+	const action = {
+		type: INCREMENT
+	};
+	return action;
 }; // define an action creator for incrementing
 
 const decAction = () => {
-  const action = {
-    type: DECREMENT
-  };
-  return action;
+	const action = {
+		type: DECREMENT
+	};
+	return action;
 }; // define an action creator for decrementing
 
 const store = Redux.createStore(counterReducer); // define the Redux store here, passing in your reducers
