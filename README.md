@@ -5,8 +5,9 @@ These are all working code ready to be implemented in any project you need.
 ## Table of Contents
 
 - [React](/react)
-    - [Component Lifecycle Hooks](/react/component-lifecycle-hooks.md)
-    - [Axios](/react/axios.md)
-    - [Routing](/react/routing.md)
+  - [Component Lifecycle Hooks](/react/component-lifecycle-hooks.md)
+  - [Axios](/react/axios.md)
+  - [Routing](/react/routing.md)
+  - [Redux](/react/redux_101.md)
 - [Rails](/rails)
-    - [Setting up a project (Basic Commands)](/rails/setting-up-a-project.md)
+  - [Setting up a project (Basic Commands)](/rails/setting-up-a-project.md)
