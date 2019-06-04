@@ -22,6 +22,8 @@ Key principles summary:
 - [Combine Multiple Reducers](#Combine-Multiple-Reducers)
 - [Send Action Data to the Store](#Send-Action-Data-to-the-Store)
 - [Use Middleware to Handle Asynchronous Actions](#Use-Middleware-to-Handle-Asynchronous-Actions)
+- [(Review) Write a Counter with Redux](#Review-Write-a-Counter-with-Redux)
+- [Never Mutate State](#Never-Mutate-State)
 
 ---
 
@@ -44,7 +46,7 @@ const reducer = (state = 5) => {
 // For example: Redux.createStore()
 // Define the store here:
 
-let store = Redux.createStore(reducer);
+const store = Redux.createStore(reducer);
 ```
 
 ---
@@ -406,3 +408,137 @@ console.log(store.getState());
 ---
 
 ## Use Middleware to Handle Asynchronous Actions
+
+Redux provides middleware designed specifically for handling asynchronous actions, called **Redux Thunk middleware**.
+
+To include Redux Thunk middleware (excerpts extracted from the challenge):
+
+1.  pass it as an argument to Redux.applyMiddleware()
+2.  This statement is then provided as a second optional parameter to the createStore() function.
+
+    ```javascript
+    const store = Redux.createStore(
+      asyncDataReducer,
+      Redux.applyMiddleware(ReduxThunk.default)
+    );
+    ```
+
+3.  to create an asynchronous action, you return a function in the action creator that takes `dispatch` as an argument (Within this function, you can dispatch actions and perform asynchronous requests).
+
+    ```javascript
+    const handleAsync = () => {
+      // you're passing dispatch as a parameter to this special action creator. This is what you'll use to dispatch your actions, you simply pass the action directly to dispatch and the middleware takes care of the rest.
+      return function(dispatch) {
+        // dispatch request action here
+        store.dispatch(requestingData());
+
+        setTimeout(function() {
+          let data = {
+            users: ["Jeff", "William", "Alice"]
+          };
+          // dispatch received data action here
+          store.dispatch(receivedData(data));
+        }, 2500);
+      };
+    };
+    ```
+
+**Note:** setTimeout() above is to simulate an API call.
+
+### Challenge
+
+```javascript
+const REQUESTING_DATA = "REQUESTING_DATA";
+const RECEIVED_DATA = "RECEIVED_DATA";
+
+const requestingData = () => {
+  return { type: REQUESTING_DATA };
+};
+const receivedData = (data) => {
+  return { type: RECEIVED_DATA, users: data.users };
+};
+
+const handleAsync = () => {
+  return function(dispatch) {
+    // dispatch request action here
+    store.dispatch(requestingData());
+
+    setTimeout(function() {
+      let data = {
+        users: ["Jeff", "William", "Alice"]
+      };
+      // dispatch received data action here
+      store.dispatch(receivedData(data));
+    }, 2500);
+  };
+};
+
+const defaultState = {
+  fetching: false,
+  users: []
+};
+
+const asyncDataReducer = (state = defaultState, action) => {
+  switch (action.type) {
+    case REQUESTING_DATA:
+      return {
+        fetching: true,
+        users: []
+      };
+    case RECEIVED_DATA:
+      return {
+        fetching: false,
+        users: action.users
+      };
+    default:
+      return state;
+  }
+};
+
+const store = Redux.createStore(
+  asyncDataReducer,
+  Redux.applyMiddleware(ReduxThunk.default)
+);
+```
+
+---
+
+## (Review) Write a Counter with Redux
+
+```javascript
+const INCREMENT = "INCREMENT"; // define a constant for increment action types
+const DECREMENT = "DECREMENT"; // define a constant for decrement action types
+
+const counterReducer = (state = 0, action) => {
+  switch (action.type) {
+    case INCREMENT:
+      return state + 1;
+      break;
+    case DECREMENT:
+      return state - 1;
+      break;
+    default:
+      return state;
+  }
+}; // define the counter reducer which will increment or decrement the state based on the action it receives
+
+const incAction = () => {
+  const action = {
+    type: INCREMENT
+  };
+  return action;
+}; // define an action creator for incrementing
+
+const decAction = () => {
+  const action = {
+    type: DECREMENT
+  };
+  return action;
+}; // define an action creator for decrementing
+
+const store = Redux.createStore(counterReducer); // define the Redux store here, passing in your reducers
+```
+
+---
+
+## Never Mutate State
