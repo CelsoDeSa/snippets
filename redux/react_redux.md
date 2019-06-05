@@ -1,3 +1,9 @@
+## Table of Contents
+
+- [Making React and Redux Dance Together](#Making-React-and-Redux-Dance-Together)
+
+---
+
 ## Making React and Redux Dance Together
 
 1.  Install Redux: `npm install ---save redux`
@@ -56,7 +62,7 @@
         render() {
             return (
                 <div>
-                    <!-- 4. instead of `this.state.counter`, props.ctr refering to `ctr:` in #2 bellow -->
+                    // 4. instead of `this.state.counter`, props.ctr refering to `ctr:` in #2 bellow
                     <CounterOutput value={this.props.ctr} />
                 </div>
             );
@@ -73,6 +79,8 @@
     // 3. kinda wrap, first parenthesis hold some configs and actions like `mapStateToProps`
     export default connect(mapStateToProps)(Counter);
     ```
+
+---
 
 ---
 

@@ -10,6 +10,6 @@ These are all working code ready to be implemented in any project you need.
   - [Routing](/react/routing.md)
 - [Redux](/redux/)
   - [Redux Basics](/redux/redux_101.md)
-  - [Redux and React](/redux/redux_and_react.md)
+  - [React and Redux](/redux/react_redux.md)
 - [Rails](/rails)
   - [Setting up a project (Basic Commands)](/rails/setting-up-a-project.md)

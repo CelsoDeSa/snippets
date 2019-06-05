@@ -26,6 +26,8 @@ Key principles summary:
 - [Use Middleware to Handle Asynchronous Actions](#Use-Middleware-to-Handle-Asynchronous-Actions)
 - [(Review) Write a Counter with Redux](#Review-Write-a-Counter-with-Redux)
 - [Never Mutate State](#Never-Mutate-State)
+- [Use the Spread Operator on Arrays](#Use-the-Spread-Operator-on-Arrays) -[Remove an Item from an Array](#Remove-an-Item-from-an-Array)
+- [Copy an Object with Object.assign](#Copy-an-Object-with-Object.assign)
 
 ---
 
@@ -598,3 +600,148 @@ const store = Redux.createStore(counterReducer); // define the Redux store here,
 ---
 
 ## Never Mutate State
+
+Immutable state means that you never modify state directly, instead, you return a new copy of state.
+
+Redux does not actively enforce state immutability in its store or reducers, that responsibility falls on the programmer.
+
+### Challenge: add a todo item without mutating the state
+
+```javascript
+const ADD_TO_DO = "ADD_TO_DO";
+
+// A list of strings representing tasks to do:
+const todos = [
+	"Go to the store",
+	"Clean the house",
+	"Cook dinner",
+	"Learn to code"
+];
+
+const immutableReducer = (state = todos, action) => {
+	switch (action.type) {
+		case ADD_TO_DO:
+			// don't mutate state here or the tests will fail
+			// I create a variable an made a copy of the state using the `...` (spread operator)
+			let allTodos = [...todos, action.todo];
+			return allTodos;
+		default:
+			return state;
+	}
+};
+
+// an example todo argument would be 'Learn React',
+const addToDo = (todo) => {
+	return {
+		type: ADD_TO_DO,
+		todo
+	};
+};
+
+const store = Redux.createStore(immutableReducer);
+```
+
+---
+
+## Use the Spread Operator on Arrays
+
+One solution from ES6 to help enforce state immutability in Redux is the spread operator: `...`
+
+If you have an array `myArray` and write:
+
+`let newArray = [...myArray];`
+
+`newArray` is now a clone of `myArray`. Both arrays still exist separately in memory. If you perform a mutation like `newArray.push(5)`, `myArray` doesn't change.
+
+**Note:** it only makes a shallow copy of the array. That is to say, _it only provides immutable array operations for one-dimensional arrays_.
+
+```javascript
+const immutableReducer = (state = ["Do not mutate state!"], action) => {
+	switch (action.type) {
+		case "ADD_TO_DO":
+			// don't mutate state here or the tests will fail
+			return [...state, action.todo];
+		default:
+			return state;
+	}
+};
+
+const addToDo = (todo) => {
+	return {
+		type: "ADD_TO_DO",
+		todo
+	};
+};
+
+const store = Redux.createStore(immutableReducer);
+```
+
+---
+
+## Remove an Item from an Array
+
+Other useful JavaScript methods include `slice()` and `concat()`.
+
+```javascript
+const immutableReducer = (state = [0, 1, 2, 3, 4, 5], action) => {
+	switch (action.type) {
+		case "REMOVE_ITEM":
+			// don't mutate state here or the tests will fail
+			let newArray = state.slice();
+			newArray.splice(action.index, 1);
+			return newArray;
+		default:
+			return state;
+	}
+};
+
+const removeItem = (index) => {
+	return {
+		type: "REMOVE_ITEM",
+		index
+	};
+};
+
+const store = Redux.createStore(immutableReducer);
+```
+
+---
+
+## Copy an Object with Object.assign
+
+`Object.assign()` takes a target object and source objects and maps properties from the source objects to the target object. Any matching properties are overwritten by properties in the source objects.
+
+This behavior is commonly used to make shallow copies of objects by passing an empty object `{}` as the first argument followed by the object(s) you want to copy.
+
+Here's an example:
+
+`const newObject = Object.assign({}, obj1, obj2);`
+
+This creates `newObject` as a new `object`, which contains the properties that currently exist in `obj1` and `obj2`.
+
+```javascript
+const defaultState = {
+	user: "CamperBot",
+	status: "offline",
+	friends: "732,982",
+	community: "freeCodeCamp"
+};
+
+const immutableReducer = (state = defaultState, action) => {
+	switch (action.type) {
+		case "ONLINE":
+			// don't mutate state here or the tests will fail
+			return Object.assign({}, defaultState, { status: "online" });
+		default:
+			return state;
+	}
+};
+
+const wakeUp = () => {
+	return {
+		type: "ONLINE"
+	};
+};
+
+const store = Redux.createStore(immutableReducer);
+```
