@@ -5,16 +5,18 @@ class DisplayMessages extends React.Component {
 			input: "",
 			messages: []
 		};
+		this.handleChange = this.handleChange.bind(this);
+    	this.submitMessage = this.submitMessage.bind(this);
 	}
 	// add handleChange() and submitMessage() methods here
-	handleChange(value) {
-		this.setState({ input: value });
+	handleChange(event) {
+		this.setState({ input: event.target.value });
 	}
 
-	submitMessage(input) {
-		const msg = input;
+	submitMessage() {
+		const msg = this.state.input;
 		this.setState({
-			messages: [...this.state.messages, msg],
+			messages: this.state.messages.concat(msg),
 			input: ""
 		});
 	}
@@ -25,15 +27,15 @@ class DisplayMessages extends React.Component {
 				<h2>Type in a new Message:</h2>
 				{/* render an input, button, and ul here */}
 				<input
-					onChange={(event) => this.handleChange(event.target.value)}
+					onChange={this.handleChange}
 					value={this.state.input}
 				/>
-				<button onClick={() => this.submitMessage(this.state.input)}>
+				<button onClick={this.submitMessage}>
 					button
 				</button>
 				<ul>
-					{this.state.messages.map((msg) => (
-						<li>{msg}</li>
+					{this.state.messages.map((msg, idx) => (
+						<li key={idx}>{msg}</li>
 					))}
 				</ul>
 				{/* change code above this line */}
