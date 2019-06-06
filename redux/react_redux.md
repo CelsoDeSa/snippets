@@ -1,6 +1,10 @@
 ## Table of Contents
 
 - [Making React and Redux Dance Together](#Making-React-and-Redux-Dance-Together)
+- [Passing and Retrieving Data with Action](#Passing-and-Retrieving-Data-with-Action)
+- [Switch-Case in the Reducer](#Switch-Case-in-the-Reducer)
+- [Updating State Immutably](#Updating-State-Immutably)
+- [Updating Arrays Immutably](#Updating-Arrays-Immutably)
 
 ---
 
@@ -94,26 +98,147 @@ The `mapDispatchToProps()` function is used to provide specific action creators 
 
 It returns an object that maps dispatch actions to property names, each property returns a function that calls dispatch with an action creator and any relevant action data.
 
-    in `counter.js`
+in `counter.js`
 
-    ```javascript
-    // 3. Pass it via props
-    <CounterControl
-        label="Increment"
-        // clicked={() => this.counterChangedHandler("inc")}
-        clicked={this.props.onIncrementCounter}
-    />
+```javascript
+// 3. Pass it via props
+<CounterControl
+	label="Increment"
+	// clicked={() => this.counterChangedHandler("inc")}
+	clicked={this.props.onIncrementCounter}
+/>;
 
-    // 1. create mapDispatchToProps function
-    const mapDispatchToProps = (dispatch) => {
-        return {
-            onIncrementCounter: () => dispatch({ type: "INCREMENT" })
-        };
-    };
+// 1. create mapDispatchToProps function
+const mapDispatchToProps = (dispatch) => {
+	return {
+		onIncrementCounter: () => dispatch({ type: "INCREMENT" })
+	};
+};
 
-    // 2. Add it as a second argument to connect
-    // Note: if you have a container that just dispatch actions, pass null as first argument: export default connect(null, mapDispatchToProps)(Counter);
-    export default connect(mapStateToProps, mapDispatchToProps)(Counter);
-    ```
+// 2. Add it as a second argument to connect
+// Note: if you have a container that just dispatch actions, pass null as first argument: export default connect(null, mapDispatchToProps)(Counter);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Counter);
+```
 
 **Note:** You have access to this `dispatch` because it's passed in to `mapDispatchToProps()` as a parameter when you define the function, just like you passed state to `mapStateToProps()`. Behind the scenes, React Redux is using Redux's `store.dispatch()` to conduct these dispatches with `mapDispatchToProps()`.
+
+---
+
+## Passing and Retrieving Data with Action
+
+**Payload:** additional data passed along with the action `type:`.
+
+in `Counter.js`
+
+```javascript
+const mapDispatchToProps = (dispatch) => {
+	return {
+		// the payload is passing Data
+		onSubtractCounter: () =>
+			dispatch({ type: "SUBTRACT", payload: { value: 15 } })
+	};
+};
+```
+
+in `reducer.js`
+
+```javascript
+const reducer = (state = initialState, action) => {
+	switch (action.type) {
+		case "SUBTRACT":
+			// action.payload.value Retrieves its Data
+			return { counter: state.counter - action.payload.value };
+		default:
+			return state;
+	}
+};
+```
+
+---
+
+## Switch-Case in the Reducer
+
+in `reducer.js`
+
+```javascript
+const reducer = (state = initialState, action) => {
+	switch (action.type) {
+		case "INCREMENT":
+			return { counter: state.counter + 1 };
+		case "DECREMENT":
+			return { counter: state.counter - 1 };
+		case "ADD":
+			return { counter: state.counter + action.payload.value };
+		case "SUBTRACT":
+			return { counter: state.counter - action.payload.value };
+		default:
+			return state;
+	}
+};
+```
+
+---
+
+## Updating State Immutably
+
+in `reducer.js`
+
+1. using `Object.assing()`, which returns a copy of the object
+
+   ```javascript
+   case "INCREMENT":
+       const newState = Object.assign({}, state);
+       newState.counter = state.counter + 1;
+       return newState;
+   ```
+
+2. Using the spread operator `...`
+
+   ```javascript
+   switch (action.type) {
+   	case "INCREMENT":
+   		return { ...state, counter: state.counter + 1 };
+   	case "DECREMENT":
+   		return { ...state, counter: state.counter - 1 };
+   	case "ADD":
+   		return { ...state, counter: state.counter + action.payload.value };
+   	case "SUBTRACT":
+   		return { ...state, counter: state.counter - action.payload.value };
+   	default:
+   		return state;
+   }
+   ```
+
+3. Using `concat()` in arrays instead of `push()` (that would change the original array)
+
+   ```javascript
+   case "STORE_RESULT":
+       return { ...state, results: state.results.concat({ id: new Date(), value: state.counter }) };
+   ```
+
+   accessing `results` in `Counter.js`:
+
+   ```javascript
+   ...
+   <ul>
+       {this.props.storedResults.map((strResult) => (  // 2. Loop through it
+           <li key={strResult.id} onClick={this.props.onDeleteResult}>
+               {strResult.value}
+           </li>
+       ))}
+   </ul>
+   ...
+   const mapStateToProps = (state) => {
+       return {
+           ctr: state.counter,
+           storedResults: state.results // 1. add this
+       };
+   };
+   ```
+
+---
+
+## Updating Arrays Immutably
